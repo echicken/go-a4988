@@ -5,89 +5,95 @@ import (
 	"github.com/stianeikeland/go-rpio"
 )
 
+// Driver contains pin mappings
 type Driver struct {
-	pin_dir rpio.Pin
-	pin_step rpio.Pin
-	pin_ms1 rpio.Pin
-	pin_ms2 rpio.Pin
-	pin_ms3 rpio.Pin
-	pin_enable rpio.Pin
+	pinDir rpio.Pin
+	pinStep rpio.Pin
+	pinMS1 rpio.Pin
+	pinMS2 rpio.Pin
+	pinMS3 rpio.Pin
+	pinEnable rpio.Pin
 }
 
-func Init(dir uint8, step uint8, ms1 uint8, ms2 uint8, ms3 uint8, enable uint8) (err error, driver Driver) {
+// Init returns a new stepper driver
+func Init(dir uint8, step uint8, ms1 uint8, ms2 uint8, ms3 uint8, enable uint8) (driver Driver, err error) {
 
 	err = rpio.Open();
 	if err != nil {
-		return err, driver
+		return driver, err
 	}
 
-	driver.pin_dir = rpio.Pin(dir)
-	driver.pin_step = rpio.Pin(step)
-	driver.pin_ms1 = rpio.Pin(ms1)
-	driver.pin_ms2 = rpio.Pin(ms2)
-	driver.pin_ms3 = rpio.Pin(ms3)
-	driver.pin_enable = rpio.Pin(enable)
+	driver.pinDir = rpio.Pin(dir)
+	driver.pinStep = rpio.Pin(step)
+	driver.pinMS1 = rpio.Pin(ms1)
+	driver.pinMS2 = rpio.Pin(ms2)
+	driver.pinMS3 = rpio.Pin(ms3)
+	driver.pinEnable = rpio.Pin(enable)
 
-	driver.pin_dir.Output()
-	driver.pin_step.Output()
-	driver.pin_ms1.Output()
-	driver.pin_ms2.Output()
-	driver.pin_ms3.Output()
-	driver.pin_enable.Output();
+	driver.pinDir.Output()
+	driver.pinStep.Output()
+	driver.pinMS1.Output()
+	driver.pinMS2.Output()
+	driver.pinMS3.Output()
+	driver.pinEnable.Output();
 
-	driver.pin_dir.Low()
-	driver.pin_step.Low()
-	driver.pin_ms1.Low()
-	driver.pin_ms2.Low()
-	driver.pin_ms3.Low()
-	driver.pin_enable.Low()
+	driver.pinDir.Low()
+	driver.pinStep.Low()
+	driver.pinMS1.Low()
+	driver.pinMS2.Low()
+	driver.pinMS3.Low()
+	driver.pinEnable.Low()
 
-	return nil, driver
+	return driver, nil
 
 }
 
+// Enable the stepper driver
 func (driver *Driver) Enable() {
-	driver.pin_enable.Low()
+	driver.pinEnable.Low()
 }
 
+// Disable the stepper driver
 func (driver *Driver) Disable() {
-	driver.pin_enable.High()
+	driver.pinEnable.High()
 }
 
+// Direction true/false alters the stepper's rotational direction
 func (driver *Driver) Direction(dir bool) {
 	if dir {
-		driver.pin_dir.High()
+		driver.pinDir.High()
 	} else {
-		driver.pin_dir.Low()
+		driver.pinDir.Low()
 	}
 }
 
+// StepSize sets the stepper's microstep increment (0 = Full, 1 = Half, 2 = Quarter, 3 = Eighth, 4 = Sixteenth)
 func (driver *Driver) StepSize(ss int) {
 	switch ss {
 		case 0: // Full
-			driver.pin_ms1.Low()
-			driver.pin_ms2.Low()
-			driver.pin_ms3.Low()
+			driver.pinMS1.Low()
+			driver.pinMS2.Low()
+			driver.pinMS3.Low()
 			break
 		case 1: // Half
-			driver.pin_ms1.High()
-			driver.pin_ms2.Low()
-			driver.pin_ms3.Low()
+			driver.pinMS1.High()
+			driver.pinMS2.Low()
+			driver.pinMS3.Low()
 			break
 		case 2: // Quarter
-			driver.pin_ms1.Low()
-			driver.pin_ms2.High()
-			driver.pin_ms3.Low()
+			driver.pinMS1.Low()
+			driver.pinMS2.High()
+			driver.pinMS3.Low()
 			break
 		case 3: // Eighth
-			driver.pin_ms1.High()
-			driver.pin_ms2.High()
-			driver.pin_ms3.Low()
+			driver.pinMS1.High()
+			driver.pinMS2.High()
+			driver.pinMS3.Low()
 			break
 		case 4: // Sixteenth
-			driver.pin_ms1.High()
-			driver.pin_ms2.High()
-			driver.pin_ms3.High()
+			driver.pinMS1.High()
+			driver.pinMS2.High()
+			driver.pinMS3.High()
 			break
 		default:
 			break
@@ -95,18 +101,20 @@ func (driver *Driver) StepSize(ss int) {
 }
 
 func (driver *Driver) step() {
-	driver.pin_step.High()
+	driver.pinStep.High()
 	time.Sleep(time.Millisecond)
-	driver.pin_step.Low()
+	driver.pinStep.Low()
 	time.Sleep(time.Millisecond)
 }
 
+// Turn the stepper n steps
 func (driver *Driver) Turn(steps int) {
 	for i := 0; i < steps; i++ {
 		driver.step()
 	}
 }
 
+// Close rpio
 func (driver *Driver) Close() {
 	rpio.Close();
 }
