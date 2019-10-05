@@ -1,24 +1,24 @@
 package a4988
 
 import (
-	"time"
 	"github.com/stianeikeland/go-rpio"
+	"time"
 )
 
 // Driver contains pin mappings
 type Driver struct {
-	pinDir rpio.Pin
-	pinStep rpio.Pin
-	pinMS1 rpio.Pin
-	pinMS2 rpio.Pin
-	pinMS3 rpio.Pin
+	pinDir    rpio.Pin
+	pinStep   rpio.Pin
+	pinMS1    rpio.Pin
+	pinMS2    rpio.Pin
+	pinMS3    rpio.Pin
 	pinEnable rpio.Pin
 }
 
 // Init returns a new stepper driver
 func Init(dir uint8, step uint8, ms1 uint8, ms2 uint8, ms3 uint8, enable uint8) (driver Driver, err error) {
 
-	err = rpio.Open();
+	err = rpio.Open()
 	if err != nil {
 		return driver, err
 	}
@@ -35,7 +35,7 @@ func Init(dir uint8, step uint8, ms1 uint8, ms2 uint8, ms3 uint8, enable uint8) 
 	driver.pinMS1.Output()
 	driver.pinMS2.Output()
 	driver.pinMS3.Output()
-	driver.pinEnable.Output();
+	driver.pinEnable.Output()
 
 	driver.pinDir.Low()
 	driver.pinStep.Low()
@@ -70,33 +70,33 @@ func (driver *Driver) Direction(dir bool) {
 // StepSize sets the stepper's microstep increment (0 = Full, 1 = Half, 2 = Quarter, 3 = Eighth, 4 = Sixteenth)
 func (driver *Driver) StepSize(ss int) {
 	switch ss {
-		case 0: // Full
-			driver.pinMS1.Low()
-			driver.pinMS2.Low()
-			driver.pinMS3.Low()
-			break
-		case 1: // Half
-			driver.pinMS1.High()
-			driver.pinMS2.Low()
-			driver.pinMS3.Low()
-			break
-		case 2: // Quarter
-			driver.pinMS1.Low()
-			driver.pinMS2.High()
-			driver.pinMS3.Low()
-			break
-		case 3: // Eighth
-			driver.pinMS1.High()
-			driver.pinMS2.High()
-			driver.pinMS3.Low()
-			break
-		case 4: // Sixteenth
-			driver.pinMS1.High()
-			driver.pinMS2.High()
-			driver.pinMS3.High()
-			break
-		default:
-			break
+	case 0: // Full
+		driver.pinMS1.Low()
+		driver.pinMS2.Low()
+		driver.pinMS3.Low()
+		break
+	case 1: // Half
+		driver.pinMS1.High()
+		driver.pinMS2.Low()
+		driver.pinMS3.Low()
+		break
+	case 2: // Quarter
+		driver.pinMS1.Low()
+		driver.pinMS2.High()
+		driver.pinMS3.Low()
+		break
+	case 3: // Eighth
+		driver.pinMS1.High()
+		driver.pinMS2.High()
+		driver.pinMS3.Low()
+		break
+	case 4: // Sixteenth
+		driver.pinMS1.High()
+		driver.pinMS2.High()
+		driver.pinMS3.High()
+		break
+	default:
+		break
 	}
 }
 
@@ -116,5 +116,5 @@ func (driver *Driver) Turn(steps int) {
 
 // Close rpio
 func (driver *Driver) Close() {
-	rpio.Close();
+	rpio.Close()
 }
